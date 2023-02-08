@@ -1,0 +1,57 @@
+11/15/22 12:41:47 | Created: /home/pi/Documents/johnParser/
+11/15/22 12:41:47 | Creating: /home/pi/Documents/johnParser/mac_lookup.txt
+11/15/22 12:41:47 | 	Requesting csv file from: 'http://standards-oui.ieee.org/oui/oui.csv'
+11/15/22 12:42:19 | 	Requesting csv file from: 'http://standards-oui.ieee.org/oui28/mam.csv'
+11/15/22 12:42:25 | 	Requesting csv file from: 'http://standards-oui.ieee.org/oui36/oui36.csv'
+11/15/22 12:46:54 | Creating: /home/pi/Documents/johnParser/mac_lookup.txt
+11/15/22 12:46:54 | 	Requesting csv file from: 'http://standards-oui.ieee.org/oui/oui.csv'
+11/15/22 12:51:33 | Creating: /home/pi/Documents/johnParser/mac_lookup.txt
+11/15/22 12:51:33 | 	Requesting csv file from: 'http://standards-oui.ieee.org/oui/oui.csv'
+11/15/22 12:52:11 | 	Requesting csv file from: 'http://standards-oui.ieee.org/oui28/mam.csv'
+11/15/22 12:52:17 | 	Requesting csv file from: 'http://standards-oui.ieee.org/oui36/oui36.csv'
+11/15/22 12:52:23 | 	Requesting csv file from: 'http://standards-oui.ieee.org/iab/iab.csv'
+11/15/22 12:52:28 | 	Requesting csv file from: 'http://standards-oui.ieee.org/cid/cid.csv'
+11/15/22 12:52:30 | Created: /home/pi/Documents/johnParser/mac_lookup.txt
+11/15/22 12:52:30 | Creating: /home/pi/Documents/johnParser/ethertype_lookup.txt
+11/15/22 12:52:30 | 	Requesting csv file from: 'http://standards-oui.ieee.org/ethertype/eth.csv'
+11/15/22 12:52:34 | Created: /home/pi/Documents/johnParser/ethertype_lookup.txt
+11/15/22 16:17:27 | Creating: /home/pi/Documents/johnParser/ethertype_lookup.txt
+11/15/22 16:17:27 | 	Requesting csv file from: 'http://standards-oui.ieee.org/ethertype/eth.csv'
+11/15/22 16:17:32 | Created: /home/pi/Documents/johnParser/ethertype_lookup.txt
+11/15/22 16:17:32 | Creating: /home/pi/Documents/johnParser/ethertype_lookup.txt
+11/15/22 16:17:32 | 	Requesting csv file from: 'http://standards-oui.ieee.org/ethertype/eth.csv'
+11/15/22 16:17:36 | Created: /home/pi/Documents/johnParser/ethertype_lookup.txt
+11/15/22 16:18:48 | Creating: /home/pi/Documents/johnParser/ethertype_lookup.txt
+11/15/22 16:18:48 | 	Requesting csv file from: 'http://standards-oui.ieee.org/ethertype/eth.csv'
+11/15/22 16:18:52 | Created: /home/pi/Documents/johnParser/ethertype_lookup.txt
+11/15/22 16:18:52 | Creating: /home/pi/Documents/johnParser/ethertype_lookup.txt
+11/15/22 16:18:52 | 	Requesting csv file from: 'http://standards-oui.ieee.org/ethertype/eth.csv'
+11/17/22 14:03:23 | Created: /home/pi/Documents/johnParser/ethertype_lookup.txt
+11/17/22 14:04:33 | Creating: /home/pi/Documents/johnParser/mac_lookup.txt
+11/17/22 14:04:33 | 	Requesting csv file from: 'http://standards-oui.ieee.org/oui/oui.csv'
+11/17/22 14:04:37 | 	Requesting csv file from: 'http://standards-oui.ieee.org/oui28/mam.csv'
+11/17/22 14:04:38 | 	Requesting csv file from: 'http://standards-oui.ieee.org/oui36/oui36.csv'
+11/17/22 14:04:38 | 	Requesting csv file from: 'http://standards-oui.ieee.org/iab/iab.csv'
+11/17/22 14:04:39 | 	Requesting csv file from: 'http://standards-oui.ieee.org/cid/cid.csv'
+11/17/22 14:04:39 | Created: /home/pi/Documents/johnParser/mac_lookup.txt
+11/17/22 14:04:39 | Creating: /home/pi/Documents/johnParser/ethertype_lookup.txt
+11/17/22 14:04:39 | 	Requesting csv file from: 'http://standards-oui.ieee.org/ethertype/eth.csv'
+11/17/22 14:04:41 | Created: /home/pi/Documents/johnParser/ethertype_lookup.txt
+11/17/22 14:04:41 | Creating: /home/pi/Documents/johnParser/config.txt
+11/17/22 14:04:41 | Created: /home/pi/Documents/johnParser/config.txt
+11/29/22 15:02:00 | Creating: /home/pi/Documents/johnParser/mac_lookup.txt
+11/29/22 15:02:00 | 	Requesting csv file from: 'http://standards-oui.ieee.org/oui/oui.csv'
+11/29/22 15:02:27 | 	Requesting csv file from: 'http://standards-oui.ieee.org/oui28/mam.csv'
+11/29/22 15:02:29 | 	Requesting csv file from: 'http://standards-oui.ieee.org/oui36/oui36.csv'
+11/29/22 15:02:33 | 	Requesting csv file from: 'http://standards-oui.ieee.org/iab/iab.csv'
+11/29/22 15:02:35 | 	Requesting csv file from: 'http://standards-oui.ieee.org/cid/cid.csv'
+11/29/22 15:02:35 | Created: /home/pi/Documents/johnParser/mac_lookup.txt
+11/29/22 15:02:35 | Creating: /home/pi/Documents/johnParser/ethertype_lookup.txt
+11/29/22 15:02:35 | 	Requesting csv file from: 'http://standards-oui.ieee.org/ethertype/eth.csv'
+11/29/22 15:02:38 | Created: /home/pi/Documents/johnParser/ethertype_lookup.txt
+11/29/22 15:02:38 | Creating: /home/pi/Documents/johnParser/arp_opcode_lookup.txt
+11/29/22 15:02:38 | 	Requesting csv file from: 'https://www.iana.org/assignments/arp-parameters/arp-parameters-1.csv'
+11/29/22 15:02:39 | Created: /home/pi/Documents/johnParser/arp_opcode_lookup.txt
+11/29/22 15:02:39 | Creating: /home/pi/Documents/johnParser/arp_hardware_lookup.txt
+11/29/22 15:02:39 | 	Requesting csv file from: 'https://www.iana.org/assignments/arp-parameters/arp-parameters-2.csv'
+11/29/22 15:02:39 | Created: /home/pi/Documents/johnParser/arp_hardware_lookup.txt
