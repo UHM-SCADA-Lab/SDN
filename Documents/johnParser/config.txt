@@ -1,6 +1,0 @@
-# Created using johnParser/functions/make_config.py
-VLANs
-	1 Replace this description at '/home/pi/Documents/johnParser/config.txt'
-	02 Replace this description at '/home/pi/Documents/johnParser/config.txt'
-	0003 SDN Production
-	XXXX Replace this default description at /home/pi/Documents/johnParser/config.txt
