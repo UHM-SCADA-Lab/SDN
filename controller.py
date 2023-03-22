@@ -20,9 +20,6 @@ from os_ken.controller.handler import set_ev_cls
 from os_ken.ofproto import ofproto_v1_3
 from os_ken.lib.packet import packet
 from os_ken.lib.packet import ethernet
-from os_ken.lib.packet import ether_types
-from os_ken.lib.packet import ipv4             
-from datetime import datetime            
 
 class SimpleSwitch13(app_manager.OSKenApp):
     OFP_VERSIONS = [ofproto_v1_3.OFP_VERSION]
