@@ -47,8 +47,8 @@ class SimpleSwitch13(app_manager.OSKenApp):
         match = parser.OFPMatch()
         actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER,
                                           ofproto.OFPCML_NO_BUFFER)]
-        self.delete_flow(datapath, match);
-        self.add_flows(datapath, 0, match, actions, 0, 0)
+        self.delete_flows(datapath, match);
+        self.add_flow(datapath, 0, match, actions, 0, 0)
    
     def add_flow(self, datapath, priority, match, actions, idle_timeout, hard_timeout, buffer_id=None):
         ofproto = datapath.ofproto
@@ -72,13 +72,8 @@ class SimpleSwitch13(app_manager.OSKenApp):
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
-       # os.system("clear")
         msg = ev.msg  
 
-        # pktParser.printInfo(msg, console=True, file_path=None)
-        Packet = sdnParser.Packet(msg.data)
-        if Packet.source_mac_address[0:3].hex() != "b827eb" or Packet.destination_mac_address[0:3].hex() != "b827eb" and Packet.ethertype.hex() != "0806": 
-            printPKTinfo.print_packet_info(Packet)
 
         # If you hit this you might want to increase
         # the "miss_send_length" of your switch
@@ -86,18 +81,11 @@ class SimpleSwitch13(app_manager.OSKenApp):
             self.logger.debug("packet truncated: only %s of %s bytes",
                               ev.msg.msg_len, ev.msg.total_len)
 
-        src = Packet.source_mac_address.hex(':')
-        dst = Packet.destination_mac_address.hex(':')
-
-        added_flow = 'False'                                #need to redo how we check if a flow is added
-
-        hard_timeout = 30                                   #Set hard timeout to 30 seconds
+        added_flow = 'False'                              
+        
+        hard_timeout = 30                                
         idle_timeout = 0
 
-        time = datetime.now()                               #maybe remove, decide later
-        current_time = time.strftime("%H:%M:%S")            # "
-        
-        #these 2 ok
         datapath = msg.datapath
         ofproto = datapath.ofproto
         parser = datapath.ofproto_parser
@@ -107,7 +95,13 @@ class SimpleSwitch13(app_manager.OSKenApp):
 
         in_port = msg.match['in_port']
         in_phy_port = msg.match['in_phy_port']
-        eth_type = int(Packet.ethertype.hex(), 16)
+        vlan_id = msg.match['vlan_vid'] - 4096; 
+        
+        pkt = packet.Packet(msg.data)
+        eth = pkt.get_protocols(ethernet.ethernet)[0]
+        src = eth.src
+        dst = eth.dst
+        eth_type = eth.ethertype
 
         # learn a mac address to avoid FLOOD next time.
         self.mac_to_port[dpid][src] = in_port
@@ -116,23 +110,11 @@ class SimpleSwitch13(app_manager.OSKenApp):
             out_port = self.mac_to_port[dpid][dst]
         else:
             out_port = ofproto.OFPP_FLOOD
-        # ok
-        if out_port == in_port:
-            return
+
 
         actions = [parser.OFPActionOutput(out_port)]
 
-        # determine packet travel direction - redo this but ok for now
-        if (out_port == 24):        # destination is physical port 24 (bridge)
-            status = 'Bridge is destination'
-        elif (in_port == 24):       # source is physical port 24 (bridge)
-            status = 'Bridge is source'
-        else:
-            status = 'Unknown'
-
-        arguments = {'in_port': in_port, 'eth_src': src, 'eth_type' :  eth_type}
-        if Packet.tagged != False:
-            arguments['vlan_vid'] = int.from_bytes(Packet.vlan_id, "big")
+        arguments = {'in_port': in_port, 'eth_src': src} 
 
         match = parser.OFPMatch(**arguments)
         self.add_flow(datapath,1,match,actions,idle_timeout,hard_timeout)
