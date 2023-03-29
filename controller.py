@@ -43,11 +43,18 @@ class SimpleSwitch13(app_manager.OSKenApp):
         # 128, OVS will send Packet-In with invalid buffer_id and
         # truncated packet data. In that case, we cannot output packets
         # correctly.  The bug has been fixed in OVS v2.1.0.
+
         match = parser.OFPMatch()
+
+        # delete flows that match anything ( aka delete all flows )
+        self.delete_flows(datapath, match);
+
+        # add a flow between the switch and the controller
         actions = [parser.OFPActionOutput(ofproto.OFPP_CONTROLLER,
                                           ofproto.OFPCML_NO_BUFFER)]
-        self.delete_flows(datapath, match);
         self.add_flow(datapath, 0, match, actions, 0, 0)
+
+
    
     def add_flow(self, datapath, priority, match, actions, idle_timeout, hard_timeout, buffer_id=None):
         ofproto = datapath.ofproto
@@ -81,9 +88,6 @@ class SimpleSwitch13(app_manager.OSKenApp):
                               ev.msg.msg_len, ev.msg.total_len)
 
         added_flow = 'False'                              
-        
-        hard_timeout = 30                                
-        idle_timeout = 0
 
         datapath = msg.datapath
         ofproto = datapath.ofproto
@@ -102,6 +106,25 @@ class SimpleSwitch13(app_manager.OSKenApp):
         dst = eth.dst
         eth_type = eth.ethertype
 
+        print()
+        print(src, '\t', dst)
+        print()
+
+        REMOTE_SWITCH_MAC = '48:0f:cf:0e:ab:40'
+        if dst == REMOTE_SWITCH_MAC or src == REMOTE_SWITCH_MAC:
+            print()
+            print(msg)
+            print()
+
+        
+        WIN_SURF_MAC = '00:15:5d:55:8a:06'
+        if dst == WIN_SURF_MAC  or src == WIN_SURF_MAC:
+            hard_timeout = 0  # never times out
+        else:
+            hard_timeout = 30 # default 30 seconds timeout for all other flows
+        
+        idle_timeout = 0      # never times out
+        
         # learn a mac address to avoid FLOOD next time.
         self.mac_to_port[dpid][src] = in_port
 
@@ -109,13 +132,15 @@ class SimpleSwitch13(app_manager.OSKenApp):
             out_port = self.mac_to_port[dpid][dst]
         else:
             out_port = ofproto.OFPP_FLOOD
-
+        
 
         actions = [parser.OFPActionOutput(out_port)]
 
-        arguments = {'in_port': in_port, 'eth_src': src} 
-
+        arguments = {'in_port': in_port, 'eth_src': src, 'vlan_vid': vlan_id} 
+        
+    
         match = parser.OFPMatch(**arguments)
+
         self.add_flow(datapath,1,match,actions,idle_timeout,hard_timeout)
         
         data = None
