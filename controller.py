@@ -19,7 +19,10 @@ from os_ken.controller.handler import CONFIG_DISPATCHER, MAIN_DISPATCHER
 from os_ken.controller.handler import set_ev_cls
 from os_ken.ofproto import ofproto_v1_3
 from os_ken.lib.packet import packet
-from os_ken.lib.packet import ethernet
+from os_ken.lib.packet import ethernet, arp, icmp
+
+from PPP.functions import parse_Packet, print_Packet
+import os
 
 from rules import time_rule
 
@@ -74,6 +77,7 @@ class SimpleSwitch13(app_manager.OSKenApp):
         mod = parser.OFPFlowMod(datapath=datapath, command=ofproto.OFPFC_DELETE, out_port=ofproto.OFPP_ANY,
                                 out_group=ofproto.OFPG_ANY, match=match, table_id=table_id)
         datapath.send_msg(mod)
+         
         
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
@@ -95,6 +99,8 @@ class SimpleSwitch13(app_manager.OSKenApp):
 
         dpid = datapath.id      
         self.mac_to_port.setdefault(dpid, {})
+       
+
 
         in_port = msg.match['in_port']
         in_phy_port = msg.match['in_phy_port']
@@ -105,16 +111,9 @@ class SimpleSwitch13(app_manager.OSKenApp):
         src = eth.src
         dst = eth.dst
         eth_type = eth.ethertype
-
-        print()
-        print(src, '\t', dst)
-        print()
-
-        REMOTE_SWITCH_MAC = '48:0f:cf:0e:ab:40'
-        if dst == REMOTE_SWITCH_MAC or src == REMOTE_SWITCH_MAC:
-            print()
-            print(msg)
-            print()
+   
+        Packet = parse_Packet.Parser(msg.data)
+        print_Packet.Printer(Packet)
 
         
         WIN_SURF_MAC = '00:15:5d:55:8a:06'
@@ -124,21 +123,34 @@ class SimpleSwitch13(app_manager.OSKenApp):
             hard_timeout = 30 # default 30 seconds timeout for all other flows
         
         idle_timeout = 0      # never times out
-        
+
+        switch_IP_addresses = ['0a012c14', '0a012c0a']
+
+        switchIsTarget = False
+        if Packet.ethertype.hex() == '0806':
+            if Packet.ARP.target_ip_address.hex() in switch_IP_addresses:
+                switchIsTarget = True
+        elif Packet.ethertype.hex() == '0800':
+            if Packet.IPv4.destination_ip_address.hex() in switch_IP_addresses:
+                switchIsTarget = True
+
         # learn a mac address to avoid FLOOD next time.
         self.mac_to_port[dpid][src] = in_port
-
         if dst in self.mac_to_port[dpid]:
             out_port = self.mac_to_port[dpid][dst]
+        elif switchIsTarget:
+            out_port = ofproto.OFPP_NORMAL
         else:
             out_port = ofproto.OFPP_FLOOD
         
 
         actions = [parser.OFPActionOutput(out_port)]
 
-        arguments = {'in_port': in_port, 'eth_src': src, 'vlan_vid': vlan_id} 
+        arguments = {'in_port': in_port, 'eth_src': src} 
         
-    
+        eth_type = int.from_bytes(Packet.ethertype, 'big');
+        arguments['eth_type'] = eth_type 
+
         match = parser.OFPMatch(**arguments)
 
         self.add_flow(datapath,1,match,actions,idle_timeout,hard_timeout)
@@ -146,8 +158,89 @@ class SimpleSwitch13(app_manager.OSKenApp):
         data = None
         if msg.buffer_id == ofproto.OFP_NO_BUFFER:
             data = msg.data
-
+        
         out = parser.OFPPacketOut(datapath=datapath, buffer_id=msg.buffer_id,
                                   in_port=in_port, actions=actions, data=data)
         datapath.send_msg(out)
+       
+
+def send_switch_ARP_reply( self, datapath, request_pkt, in_port, vlan_id ): 
+    hard_timeout = 30;
+    remote_switch_MAC = '5c:b9:01:20:0f:80'
+    remote_switch_IP = '10.1.44.20'
+
+    parser = datapath.ofproto_parser
+    ofproto = datapath.ofproto
+    
+    eth = request_pkt.get_protocols(ethernet.ethernet)[0]
+    src = eth.src
+    dst = eth.dst
+
+    request_arp = request_pkt.get_protocols(arp.arp)[0]
+    
+    if request_arp.dst_ip != remote_switch_IP:
+        return;
+
+    arguments = {'eth_src': remote_switch_MAC, 'eth_type': 0x806 } 
         
+    if eth.ethertype == 0x8100:
+        arguments['vlan_vid'] = vlan_id
+
+    match = parser.OFPMatch(**arguments)
+
+    actions = [parser.OFPActionOutput(in_port)]
+
+    self.add_flow(datapath,1,match,actions,0,hard_timeout)
+
+    arp_resp = packet.Packet()
+
+    arp_resp.add_protocol(ethernet.ethernet(ethertype=eth.ethertype,
+                          dst=src, src=remote_switch_MAC))
+
+    arp_resp.add_protocol(arp.arp(opcode=arp.ARP_REPLY,
+                          src_mac=remote_switch_MAC, 
+                          src_ip=remote_switch_IP,
+                          dst_mac=request_arp.src_mac,
+                          dst_ip=request_arp.src_ip))
+
+    arp_resp.serialize()
+
+    out = parser.OFPPacketOut(datapath=datapath, buffer_id=ofproto.OFP_NO_BUFFER,
+                          in_port=ofproto.OFPP_CONTROLLER, actions=actions, data=arp_resp)
+    
+    datapath.send_msg(out)
+'''
+def send_switch_ICMP_reply( self, datapath, request_pkt, in_port ):
+    remote_switch_MAC = '5c:b9:01:20:0f:80'
+    remote_switch_IP = '10.1.44.20'
+
+    parser = datapath.ofproto_parser
+    ofproto = datapath.ofproto
+    
+    eth = request_pkt.get_protocols(ethernet.ethernet)[0]
+    src = eth.src
+    dst = eth.dst
+
+    request_icmp = request_pkt.get_protocols(icmp.icmp)[0]
+    
+    if request_icmp.dst_ip != remote_switch_IP:
+        return;
+
+    actions = [parser.OFPActionOutput(in_port)]
+
+    icmp_resp = packet.Packet()
+
+    icmp_resp.add_protocol(ethernet.ethernet(ethertype=eth.ethertype,
+                          dst=src, src=remote_switch_MAC))
+
+    icmp_resp.add_protocol(
+
+
+    icmp_resp.serialize()
+
+    out = parser.OFPPacketOut(datapath=datapath, buffer_id=ofproto.OFP_NO_BUFFER,
+                          in_port=ofproto.OFPP_CONTROLLER, actions=actions, data=icmp_resp)
+    
+    datapath.send_msg(out)
+'''
+
