@@ -61,7 +61,6 @@ class SimpleSwitch13(app_manager.OSKenApp):
         actions = [parser.OFPActionOutput(ofproto.OFPP_NORMAL)]
         self.add_flow(datapath, 1, match, actions, 0, 0)
 
-
    
     def add_flow(self, datapath, priority, match, actions, idle_timeout, hard_timeout, buffer_id=None):
         ofproto = datapath.ofproto
@@ -86,5 +85,4 @@ class SimpleSwitch13(app_manager.OSKenApp):
 
     @set_ev_cls(ofp_event.EventOFPPacketIn, MAIN_DISPATCHER)
     def _packet_in_handler(self, ev):
-        print("Hello, world!")
-        print()
+        pass
